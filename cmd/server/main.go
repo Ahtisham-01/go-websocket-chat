@@ -22,7 +22,7 @@ func main() {
 		addr = ":8080" // fallback
 	}
 	ChatServer := server.NewChatServer(addr)
-	// Start the server
+
 	if err := ChatServer.Start(); err != nil {
 		log.Fatal("server error:", err)
 	}
