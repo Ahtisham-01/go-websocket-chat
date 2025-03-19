@@ -6,7 +6,6 @@ import (
 	"go-websocket-chats/server"
 )
 
-// init function to load environment variables
 func init() {
 	file, err := os.Open(".env")
 	if err != nil {
@@ -19,7 +18,7 @@ func init() {
 func main() {
 	addr := os.Getenv("SERVER_ADDR")
 	if addr == "" {
-		addr = ":8080" // fallback
+		addr = ":8080" 
 	}
 	ChatServer := server.NewChatServer(addr)
 
