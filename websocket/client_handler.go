@@ -47,7 +47,6 @@ func (c *ClientHandler) readMessages() {
 		return nil
 	})
 
-	//continuosly read messages
 	for {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
