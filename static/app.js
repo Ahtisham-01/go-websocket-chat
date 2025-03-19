@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             clearTimeout(typingTimer);
             
-            // Set a small delay before allowing another message to be sent
+
             typingTimer = setTimeout(() => {
                 lastTypedMessage = '';
             }, 100);
