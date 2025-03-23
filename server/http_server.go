@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go-websocket-chats/database"
 	"go-websocket-chats/websocket"
 	"log"
 	"net/http"
@@ -12,8 +13,22 @@ type ChatServer struct {
 }
 
 func NewChatServer(address string) *ChatServer {
+	// Connect to database
+	db, err := database.ConnectDB()
+	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
+		// Continue without database
+		return &ChatServer{
+			ConnectionManager: websocket.NewConnectionManager(nil),
+			serverAddress:     address,
+		}
+	}
+
+	// Create message repository
+	messageRepo := websocket.NewMessageRepository(db)
+
 	return &ChatServer{
-		ConnectionManager: websocket.NewConnectionManager(),
+		ConnectionManager: websocket.NewConnectionManager(messageRepo),
 		serverAddress:     address,
 	}
 }
@@ -38,7 +53,7 @@ func (s *ChatServer) setupRoutes() {
 
 	// Route for WebSocket connections
 	http.HandleFunc("/ws", s.handleWebSocket)
-	// Route for static files (CSS, JS, images)
+	// Route for static files
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 }

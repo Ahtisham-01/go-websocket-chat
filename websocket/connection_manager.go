@@ -5,14 +5,16 @@ type ConnectionManager struct {
 	BroadcastMessageToAllConnectedClients chan []byte
 	AddNewConnectedClients                chan *ClientHandler
 	RemoveDisconnectedClient              chan *ClientHandler
+	messageRepo                           *MessageRepository
 }
 
-func NewConnectionManager() *ConnectionManager {
+func NewConnectionManager(messageRepo *MessageRepository) *ConnectionManager {
 	return &ConnectionManager{
 		BroadcastMessageToAllConnectedClients: make(chan []byte),
 		AddNewConnectedClients:                make(chan *ClientHandler),
 		RemoveDisconnectedClient:              make(chan *ClientHandler),
 		ActiveClients:                         make(map[*ClientHandler]bool),
+		messageRepo:                           messageRepo,
 	}
 }
 
@@ -30,6 +32,11 @@ func (cm *ConnectionManager) Run() {
 			}
 			// When a message needs to be broadcast
 		case message := <-cm.BroadcastMessageToAllConnectedClients:
+			// Save message to repository
+			if cm.messageRepo != nil {
+				cm.messageRepo.AddMessage(string(message))
+			}
+
 			for client := range cm.ActiveClients {
 				select {
 				case client.send <- message:
