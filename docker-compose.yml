@@ -1,0 +1,32 @@
+services:
+  # PostgreSQL database service
+  postgres:
+    image: postgres:13
+    container_name: chat-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: alpha123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Go WebSocket chat application service
+  chat-server:
+    build: .
+    container_name: chat-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - SERVER_ADDR=:8080
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=alpha123
+      - DB_NAME=postgres
+
+volumes:
+  postgres-data:
